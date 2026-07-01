@@ -21,7 +21,7 @@ team_members:
 # ============================================================================
 github_repo: "https://github.com/Tanish-Shitanshu/redrob-ranker"
 
-sandbox_link: "PENDING — to be filled in once deployed (see Step below)"
+sandbox_link: "https://huggingface.co/spaces/Tiger-teen/redrob-ranker"
 
 reproduce_command: "python3 rank.py --candidates ./candidates.jsonl --out ./submission.csv"
 # Verified end-to-end on the full 100,000-candidate pool:
