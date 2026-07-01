@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 venv/
 submission.csv
+!data/sample_candidates.jsonl
