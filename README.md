@@ -95,7 +95,7 @@ into the semantic score automatically — no code changes needed.
 ## Team
 
 - Tanish Shitanshu (ts260@snu.edu.in) — primary contact
-- Sai Mohit Kotta (sk281@snu.edu.in)
+- Sai Mohit Kotta (mohit4learning@gmail.com)
 
 ## AI tools disclosure
 
