@@ -70,7 +70,7 @@ def _days_since(d: date | None) -> int | None:
     return (TODAY - d).days
 
 
-def extract_features(candidate: dict) -> dict[str, Any]:
+def extract_features(candidate: dict, light: bool = False) -> dict[str, Any]:
     profile = candidate.get("profile", {})
     signals = candidate.get("redrob_signals", {})
     career = candidate.get("career_history", [])
@@ -96,6 +96,10 @@ def extract_features(candidate: dict) -> dict[str, Any]:
     last_active = _parse_date(signals.get("last_active_date"))
     days_inactive = _days_since(last_active)
 
+    # title list needed by scorer.title_relevance — keep as a compact string,
+    # not the full career_history structure, in light mode
+    titles = [profile.get("current_title", "")] + [j.get("title", "") for j in career]
+
     feats = {
         "candidate_id": candidate.get("candidate_id"),
         "years_of_experience": profile.get("years_of_experience", 0) or 0,
@@ -103,6 +107,7 @@ def extract_features(candidate: dict) -> dict[str, Any]:
         "current_company": profile.get("current_company", ""),
         "location": profile.get("location", ""),
         "country": profile.get("country", ""),
+        "titles_text": " ".join(t.lower() for t in titles if t),
 
         # production-evidence signal counts (career_history only, not skills)
         "embed_hit_count": len(embed_hits),
@@ -148,13 +153,18 @@ def extract_features(candidate: dict) -> dict[str, Any]:
         "offer_acceptance_rate": signals.get("offer_acceptance_rate", -1),
         "github_activity_score": signals.get("github_activity_score", -1),
 
-        # for semantic similarity + reasoning generation
+        # for semantic similarity
         "full_text": full_text,
-        "summary": profile.get("summary", ""),
-        "headline": profile.get("headline", ""),
-        "career_history": career,
-        "skills": skills,
-        "education": candidate.get("education", []),
-        "raw_signals": signals,
     }
+
+    if not light:
+        feats.update({
+            "summary": profile.get("summary", ""),
+            "headline": profile.get("headline", ""),
+            "career_history": career,
+            "skills": skills,
+            "education": candidate.get("education", []),
+            "raw_signals": signals,
+        })
+
     return feats

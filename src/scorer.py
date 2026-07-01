@@ -30,8 +30,7 @@ def title_relevance(feats: dict) -> float:
     titles regardless of skills list content — this is the JD's stated
     anti-keyword-stuffing check (a 'Marketing Manager' with AI skills tags is
     not a fit)."""
-    titles = [feats["current_title"]] + [j.get("title", "") for j in feats["career_history"]]
-    titles_text = " ".join(t.lower() for t in titles if t)
+    titles_text = feats["titles_text"]
 
     strong_terms = ["ai engineer", "ml engineer", "machine learning engineer", "search engineer",
                      "ranking", "retrieval", "recommendation", "applied scientist", "nlp engineer",
