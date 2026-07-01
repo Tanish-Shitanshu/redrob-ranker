@@ -2,3 +2,7 @@ scikit-learn>=1.3
 numpy>=1.24
 # Optional upgrade (not required for rank.py to run):
 # sentence-transformers>=2.2
+
+# Sandbox app only (not required for rank.py / the actual ranking submission):
+gradio>=4.0
+pandas>=2.0
