@@ -1,0 +1,96 @@
+# Redrob Hackathon — Submission Metadata
+# Team ThunderCode
+
+team_name: "ThunderCode"
+
+primary_contact:
+  name: "Tanish Shitanshu"
+  email: "ts260@snu.edu.in"
+  phone: "+91-8882606223"
+
+team_members:
+  - name: "Tanish Shitanshu"
+    email: "ts260@snu.edu.in"
+    role: "Lead / ML Engineer"
+  - name: "Sai Mohit Kotta"
+    email: "sk281@snu.edu.in"
+    role: "Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/Tanish-Shitanshu/redrob-ranker"
+
+sandbox_link: "PENDING — to be filled in once deployed (see Step below)"
+
+reproduce_command: "python3 rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+# Verified end-to-end on the full 100,000-candidate pool:
+#   - Local run (Tanish's machine): 27.2s total runtime
+#   - Sandbox test run: 66.7s total runtime
+#   - Peak RSS observed: ~2GB (well under 16GB budget)
+#   - Passes validate_submission.py
+#   - Honeypot rate in top 100: 1.0% (limit is 10%)
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "MacBook (Apple Silicon)"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.13"
+  os: "macOS 15.5"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false              # true only if the optional embedding upgrade is used
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude (via chat + Claude Code) throughout development: architecture
+  discussion for the scoring design, writing the feature extraction /
+  honeypot detection / scoring / reasoning-generation modules, and iterative
+  debugging. Two real bugs were caught and fixed through iteration visible in
+  git history: (1) honeypot detection thresholds were initially too
+  aggressive (36% false-positive rate on the sample set) and were recalibrated
+  down to ~1-2%; (2) a title-relevance scoring bug allowed unrelated
+  professions (e.g. Civil Engineer) to outrank real software engineers purely
+  on experience-band and location signals, fixed with a hard relevance gate.
+  No candidate data was sent to any hosted LLM API — the ranking pipeline
+  itself (rank.py) makes zero network calls and uses only local TF-IDF
+  (optionally local sentence-transformers embeddings, also loaded from disk,
+  never downloaded at rank time).
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  Rule-based + TF-IDF hybrid ranker with a two-pass streaming architecture for
+  memory efficiency at 100K scale. Structured the JD into hard requirements,
+  disqualifiers, and an "ideal candidate" shape rather than a flat keyword
+  list. Production-evidence keywords (embeddings, vector DBs, eval frameworks)
+  are matched against career_history descriptions specifically, not the
+  skills list, to defend against keyword-stuffing traps. Composite score
+  blends semantic similarity, production evidence, title relevance,
+  experience-band fit, location fit, and notice period, minus disqualifier
+  penalties (research-only, consulting-only, CV/robotics-without-NLP,
+  title-chasing tenure churn), multiplied by a behavioral-signal availability
+  modifier and a honeypot-suppression factor calibrated against the sample
+  dataset. A hard relevance gate prevents unrelated professions from
+  outranking real candidates on experience/location signals alone. Runtime
+  ~27-70s for 100K candidates on CPU, well within the 5-minute budget.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
